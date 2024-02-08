@@ -1,0 +1,57 @@
+{
+  "name": "paytic/omnipay-btipay",
+  "type": "library",
+  "license": "MIT",
+  "description": "omnipay driver for BT IPay from Banca Transilvania\n\n",
+  "keywords": [
+    "mobilpay",
+    "driver",
+    "gateway",
+    "merchant",
+    "pay",
+    "payment"
+  ],
+  "homepage": "https://github.com/paytic/omnipay-btipay",
+  "authors": [
+    {
+      "name": "Gabriel Solomon",
+      "email": "hello@gabrielsolomon.ro"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/paytic/btipay"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Paytic\\Omnipay\\Btipay\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Paytic\\Omnipay\\Btipay\\Tests\\": "tests/src",
+      "Paytic\\Omnipay\\Btipay\\Tests\\Fixtures\\": "tests/fixtures"
+    }
+  },
+  "require": {
+    "php": "^7.4|^8.0",
+    "ext-dom": "*",
+    "stev/btipay": "^0.1|dev-master",
+    "paytic/omnipay-common": "^3.0",
+    "http-interop/http-factory-guzzle": "^1.2"
+  },
+  "require-dev": {
+    "bytic/phpqatools": "^1.0",
+    "omnipay/tests": "^3|^4",
+    "vlucas/phpdotenv": "^2.3",
+    "symfony/http-client": "^5.0|^6.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "php-http/discovery": true,
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
+  }
+}
