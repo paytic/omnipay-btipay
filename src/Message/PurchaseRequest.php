@@ -3,14 +3,8 @@
 namespace Paytic\Omnipay\Btipay\Message;
 
 use DateTime;
-use Paytic\Omnipay\Common\Library\Signer;
 use Paytic\Omnipay\Common\Message\Traits\HasLanguageRequestTrait;
 use Paytic\Omnipay\Common\Message\Traits\RequestDataGetWithValidationTrait;
-use Paytic\Omnipay\Btipay\Models\Address;
-use Paytic\Omnipay\Btipay\Models\Invoice;
-use Paytic\Omnipay\Btipay\Models\PaymentRecurrence;
-use Paytic\Omnipay\Btipay\Models\PaymentSplit;
-use Paytic\Omnipay\Btipay\Models\Request\Card;
 use Stev\BTIPay\Exceptions\ValidationException;
 use Stev\BTIPay\Model\BillingInfo;
 use Stev\BTIPay\Model\CustomerDetails;
@@ -28,7 +22,6 @@ class PurchaseRequest extends AbstractRequest
 {
     use RequestDataGetWithValidationTrait;
     use HasLanguageRequestTrait;
-
 
     /**
      * @inheritdoc

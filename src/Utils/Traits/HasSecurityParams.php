@@ -52,7 +52,7 @@ trait HasSecurityParams
     public function getDefaultParameters()
     {
         return [
-            'testMode' => $this->getTestMode(), // Must be the 1st in the list!
+            'testMode' => $this->getTestMode(),
             'username' => $this->getUsername(),
             'password' => $this->getPassword(),
             'card' => [
@@ -60,17 +60,4 @@ trait HasSecurityParams
             ], //Add in order to generate the Card Object
         ];
     }
-
-    /**
-     * @param boolean $value
-     * @return $this|AbstractGateway
-     */
-    public function setTestMode($value)
-    {
-        $this->parameters->remove('endpointUrl');
-
-        return parent::setTestMode($value);
-    }
-
-    // ------------ Getter'n'Setters ------------ //
 }

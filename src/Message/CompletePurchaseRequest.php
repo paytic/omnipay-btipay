@@ -20,6 +20,20 @@ class CompletePurchaseRequest extends AbstractRequest
         $data = [];
         $data['orderId'] = $this->httpRequest->query->get('orderId');
 
+        $btClient = $this->getClient();
+        $response = $btClient->getOrderStatusExtendedByOrderId($data['orderId']);
+
+        $data['orderNumber'] = $response->getOrderNumber();
+        $data['status'] = $response->getOrderStatus();
+        $data['actionCode'] = $response->getActionCode();
+        $data['actionCodeDescription'] = $response->getActionCodeDescription();
+        $data['amount'] = $response->getAmount();
+        $data['currency'] = $response->getCurrency();
+        $data['orderDescription'] = $response->getOrderDescription();
+        $cardAuthInfo = $response->getCardAuthInfo();
+        $data['card_name'] = $cardAuthInfo->getCardholderName();
+        $data['card_number'] = $cardAuthInfo->getPan();
+        $data['card_exp'] = $cardAuthInfo->getExpiration();
         return $data;
     }
 
@@ -28,6 +42,9 @@ class CompletePurchaseRequest extends AbstractRequest
      */
     public function isValidNotification()
     {
-        return $this->hasGET('orderId');
+        return
+            $this->hasGET('orderId')
+            && $this->hasGET('token')
+            && $this->hasGET('approvalCode');
     }
 }
