@@ -2,9 +2,10 @@
 
 namespace Paytic\Omnipay\Btipay\Message;
 
-use Paytic\Omnipay\Common\Library\Signer;
+use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Token;
+use Lcobucci\JWT\Token\Parser;
 use Paytic\Omnipay\Common\Message\Traits\GatewayNotificationRequestTrait;
-use Paytic\Omnipay\Btipay\Models\Request\AbstractRequest as BtipayAbstractRequest;
 use Exception;
 
 /**
@@ -27,7 +28,7 @@ class ServerCompletePurchaseRequest extends AbstractRequest
         try {
             $this->traitGetData();
         } catch (Exception $exception) {
-            $this->setDataItem('code', BtipayAbstractRequest::CONFIRM_ERROR_TYPE_TEMPORARY);
+//            $this->setDataItem('code', BtipayAbstractRequest::CONFIRM_ERROR_TYPE_TEMPORARY);
             $this->setDataItem('codeType', $exception->getCode());
             $this->setDataItem('message', $exception->getMessage());
         }
@@ -40,7 +41,23 @@ class ServerCompletePurchaseRequest extends AbstractRequest
      */
     public function isValidNotification()
     {
-        return $this->hasPOST('env_key') && $this->hasPOST('data');
+        if ($this->httpRequest->getMethod() !=='POST') {
+            return false;
+        }
+        $postContent = $this->httpRequest->getContent();
+        if (empty($postContent)) {
+            return false;
+        }
+        $parser = new Parser(new JoseEncoder());
+
+        try {
+            $token = $parser->parse($postContent);
+        } catch (\Exception $e) {
+            return false;
+        }
+
+        $this->setDataItem('decodedToken', $token);
+        return true;
     }
 
     /**
@@ -49,90 +66,40 @@ class ServerCompletePurchaseRequest extends AbstractRequest
      */
     protected function parseNotification()
     {
-        $xml = $this->getDecodedXML();
-        $notification = $this->getBtipayNotify($xml);
+        $notification = $this->getDecodedData();
 
-        $this->setDataItem('code', $notification->errorCode);
-        $this->setDataItem('codeType', $notification->errorCode);
-        $this->setDataItem('message', $notification->errorMessage);
+        $this->setDataItem('orderId', $notification['mdOrder']);
+        $this->setDataItem('orderNumber', $notification['orderNumber']);
+        $this->setDataItem('status', $notification['status']);
+        $this->setDataItem('actionCode', $notification['actionCode']);
+        $this->setDataItem('actionCodeDescription', $notification['actionCodeDescription']);
+        $this->setDataItem('approvalCode', $notification['approvalCode']);
 
         return $notification;
     }
 
     /**
-     * @return string
+     * @return Token
      */
-    public function getDecodedXML()
+    public function getDecodedToken(): Token
     {
-        $data = $this->getDecodedData();
-        $envKey = $this->getDecodedKey();
-
-        $signer = new Signer();
-        $signer->setPrivateKey($this->getPrivateKey());
-
-        return $signer->openContentWithRSA($data, $envKey);
+        if (!$this->hasDataItem('decodedToken')) {
+           throw new Exception('Token not decoded');
+        }
+        return $this->getDataItem('decodedToken');
     }
 
     /**
      * @return bool|mixed|string
      * @throws Exception
      */
-    protected function getDecodedData()
+    public function getDecodedData()
     {
         if (!$this->hasDataItem('data_decoded')) {
-            $data = $this->httpRequest->request->get('data');
-            $data = base64_decode($data);
-            if ($data === false) {
-                throw new Exception(
-                    'Failed decoding data',
-                    BtipayAbstractRequest::ERROR_CONFIRM_FAILED_DECODING_DATA
-                );
-            }
+            $data = $this->getDecodedToken()->claims()->get('payload');
             $this->setDataItem('data_decoded', $data);
         }
 
         return $this->getDataItem('data_decoded');
-    }
-
-    /**
-     * @return bool|mixed|string
-     * @throws Exception
-     */
-    protected function getDecodedKey()
-    {
-        if (!$this->hasDataItem('key_decoded')) {
-            $envKey = $this->httpRequest->request->get('env_key');
-            $envKey = base64_decode($envKey);
-            if ($envKey === false) {
-                throw new Exception(
-                    'Failed decoding envelope key',
-                    BtipayAbstractRequest::ERROR_CONFIRM_FAILED_DECODING_ENVELOPE_KEY
-                );
-            }
-            $this->setDataItem('key_decoded', $envKey);
-        }
-
-        return $this->getDataItem('key_decoded');
-    }
-
-    /**
-     * @param $xml
-     * @return \Paytic\Omnipay\Btipay\Models\Request\Notify
-     */
-    public function getBtipayNotify($xml)
-    {
-        $cardRequest = $this->parseXml($xml);
-        $this->setDataItem('cardRequest', $cardRequest);
-
-        return $cardRequest->notifyResponse;
-    }
-
-    /**
-     * @param $xml
-     * @return \Paytic\Omnipay\Btipay\Models\Request\Card
-     */
-    public function parseXml($xml)
-    {
-        return BtipayAbstractRequest::factory($xml);
     }
 }

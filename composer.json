@@ -40,7 +40,8 @@
     "ext-dom": "*",
     "stev/btipay": "^0.1|dev-master",
     "paytic/omnipay-common": "^3.0",
-    "http-interop/http-factory-guzzle": "^1.2"
+    "http-interop/http-factory-guzzle": "^1.2",
+    "lcobucci/jwt": "^4.1|^5.0"
   },
   "require-dev": {
     "bytic/phpqatools": "^1.0",
