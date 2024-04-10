@@ -2,10 +2,10 @@
 
 namespace Paytic\Omnipay\Btipay;
 
+use Paytic\Omnipay\Common\Gateway\AbstractGateway;
 use Paytic\Omnipay\Common\Gateway\Traits\HasLanguageTrait;
 use Paytic\Omnipay\Btipay\Utils\Traits\HasSecurityParams;
 use Paytic\Omnipay\Btipay\Gateway\HasRequests;
-use Omnipay\Common\AbstractGateway;
 use Omnipay\Common\Message\RequestInterface;
 
 /**
