@@ -21,15 +21,16 @@ class ServerCompletePurchaseRequestTest extends AbstractRequestTest
         $token = $request->getDecodedToken();
         assertInstanceOf(Token::class, $token);
 
-        self::assertSame(['mdOrder' => '1ec59ecb-07c2-4cc5-9fdb-69987c7d0a2c',
-            'orderNumber' => '2021038132635574',
+        self::assertSame(['mdOrder' => '2ccd55a5-27f8-4790-b9ec-9b0d3e0808c9',
+            'orderNumber' => '192640',
             'eci' => '05',
             'actionCode' => '0',
-            'approvalCode' => '224348',
-            'refNum' => '002340224348',
-            'actionCodeDescription' => 'Payment approved and completed successfully.',
+            'approvalCode' => '065242',
+            'refNum' => '007925172961',
+            'actionCodeDescription' => 'Payment approved and completed successfully',
             'status' => '1',
-            'operation' => 'approved'],
-            $request->getDecodedData());
+            'operation' => 'deposited'],
+            $request->getDecodedData()
+        );
     }
 }

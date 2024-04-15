@@ -3,8 +3,13 @@
 namespace Paytic\Omnipay\Btipay\Message;
 
 use Lcobucci\JWT\Encoding\JoseEncoder;
+use Lcobucci\JWT\Signer\Key\InMemory;
+use Lcobucci\JWT\Signer\Hmac\Sha256;
 use Lcobucci\JWT\Token;
 use Lcobucci\JWT\Token\Parser;
+use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
+use Lcobucci\JWT\Validation\Validator;
 use Paytic\Omnipay\Common\Message\Traits\GatewayNotificationRequestTrait;
 use Exception;
 
@@ -44,6 +49,17 @@ class ServerCompletePurchaseRequest extends AbstractRequest
         if ($this->httpRequest->getMethod() !=='POST') {
             return false;
         }
+        $token = $this->parseToken();
+        if (!$token) {
+            return false;
+        }
+
+        $this->validateToken($token);
+        return true;
+    }
+
+    protected function parseToken()
+    {
         $postContent = $this->httpRequest->getContent();
         if (empty($postContent)) {
             return false;
@@ -57,7 +73,23 @@ class ServerCompletePurchaseRequest extends AbstractRequest
         }
 
         $this->setDataItem('decodedToken', $token);
-        return true;
+        return $token;
+    }
+
+    protected function validateToken(Token $token)
+    {
+        $validator = new Validator();
+
+        try {
+            $validator->assert($token, new SignedWith(
+                new Sha256(),
+                InMemory::base64Encoded('56tLBt/f52zw3WyLjLnl6zNgToJ2AtcSQ7vdQSz+ztM=')
+            )); // doesn't throw an exception
+//            $validator->assert($token, new IssuedBy('epay-app-02-uat.bt.wan'));
+        } catch (RequiredConstraintsViolated $e) {
+            // list of constraints violation exceptions:
+            throw new Exception('Token validation failed');
+        }
     }
 
     /**
