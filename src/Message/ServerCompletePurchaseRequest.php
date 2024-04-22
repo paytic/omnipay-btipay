@@ -83,7 +83,7 @@ class ServerCompletePurchaseRequest extends AbstractRequest
         try {
             $validator->assert($token, new SignedWith(
                 new Sha256(),
-                InMemory::base64Encoded('56tLBt/f52zw3WyLjLnl6zNgToJ2AtcSQ7vdQSz+ztM=')
+                InMemory::base64Encoded($this->getCallbackToken())
             )); // doesn't throw an exception
 //            $validator->assert($token, new IssuedBy('epay-app-02-uat.bt.wan'));
         } catch (RequiredConstraintsViolated $e) {

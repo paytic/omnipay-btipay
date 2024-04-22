@@ -29,6 +29,10 @@ class Gateway extends AbstractGateway
     use HasSecurityParams;
     use HasLanguageTrait;
 
+    public const SECURITY_PARAM_USERNAME = 'username';
+    public const SECURITY_PARAM_PASSWORD = 'password';
+    public const SECURITY_PARAM_CALLBACK_TOKEN = 'callback_token';
+
     /**
      * @inheritdoc
      */

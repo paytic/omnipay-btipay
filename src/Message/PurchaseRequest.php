@@ -37,7 +37,7 @@ class PurchaseRequest extends AbstractRequest
     /** @noinspection PhpMissingParentCallCommonInspection
      * @inheritdoc
      */
-    public function validateDataFields()
+    public function validateDataFields(): array
     {
         return [
             'username',
