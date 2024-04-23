@@ -72,9 +72,9 @@ trait HasSecurityParams
             'username' => $this->getUsername(),
             'password' => $this->getPassword(),
             'callbackToken' => $this->getCallbackToken(),
-            'card' => [
-                'first_name' => '',
-            ], //Add in order to generate the Card Object
+//            'card' => [
+//                'first_name' => '',
+//            ], //Add in order to generate the Card Object
         ];
     }
 }

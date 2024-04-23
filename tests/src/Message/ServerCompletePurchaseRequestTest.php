@@ -14,6 +14,9 @@ class ServerCompletePurchaseRequestTest extends AbstractRequestTest
             ServerCompletePurchaseRequest::class,
             'ServerComplete/demoParams'
         );
+        $request->initialize(
+            ['callback_token' => getenv('BTIPAY_CALLBACK_TOKEN')]
+        );
 
         self::assertInstanceOf(ServerCompletePurchaseRequest::class, $request);
         self::assertTrue($request->isValidNotification());

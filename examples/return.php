@@ -8,5 +8,10 @@ $gateway = require '_init.php';
 $request = $gateway->completePurchase($_GET);
 $response = $request->send();
 
-var_dump($response->isSuccessful());
-var_dump($response->getData());
+echo 'CompletePurchaseResponse: <br>';
+echo 'isSuccessful: ' . $response->isSuccessful() . '<br>';
+echo 'getTransactionReference: ' . $response->getTransactionReference() . '<br>';
+echo 'getTransactionId: ' . $response->getTransactionId() . '<br>';
+echo 'getCode: ' . $response->getCode() . '<br>';
+echo 'getMessage: ' . $response->getMessage() . '<br>';
+echo 'getData: ' . json_encode($response->getData()) . '<br>';

@@ -23,17 +23,20 @@ class CompletePurchaseRequest extends AbstractRequest
         $btClient = $this->getClient();
         $response = $btClient->getOrderStatusExtendedByOrderId($data['orderId']);
 
-        $data['orderNumber'] = $response->getOrderNumber();
-        $data['status'] = $response->getOrderStatus();
-        $data['actionCode'] = $response->getActionCode();
-        $data['actionCodeDescription'] = $response->getActionCodeDescription();
-        $data['amount'] = $response->getAmount();
-        $data['currency'] = $response->getCurrency();
-        $data['orderDescription'] = $response->getOrderDescription();
+        $order = [];
+        $order['orderNumber'] = $response->getOrderNumber();
+        $order['status'] =  $data['status'] = $response->getOrderStatus();
+        $order['actionCode'] = $response->getActionCode();
+        $order['actionCodeDescription'] = $response->getActionCodeDescription();
+        $order['amount'] = $response->getAmount();
+        $order['currency'] = $response->getCurrency();
+        $order['orderDescription'] = $response->getOrderDescription();
         $cardAuthInfo = $response->getCardAuthInfo();
-        $data['card_name'] = $cardAuthInfo->getCardholderName();
-        $data['card_number'] = $cardAuthInfo->getPan();
-        $data['card_exp'] = $cardAuthInfo->getExpiration();
+        $order['card_name'] = $cardAuthInfo->getCardholderName();
+        $order['card_number'] = $cardAuthInfo->getPan();
+        $order['card_exp'] = $cardAuthInfo->getExpiration();
+
+        $data['order'] = $order;
         return $data;
     }
 

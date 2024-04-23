@@ -2,6 +2,7 @@
 
 namespace Paytic\Omnipay\Btipay\Message;
 
+use Paytic\Omnipay\Btipay\Utils\OrderStatus;
 use Paytic\Omnipay\Common\Message\Traits\HtmlResponses\ConfirmHtmlTrait;
 use Stev\BTIPay\Util\OrderStatuses;
 
@@ -13,12 +14,9 @@ class CompletePurchaseResponse extends AbstractResponse
 {
     use ConfirmHtmlTrait;
 
-    public function isSuccessful()
+    public function isSuccessful(): bool
     {
-        return in_array(
-            $this->getDataProperty('status'),
-            [OrderStatuses::STATUS_DEPOSITED_SUCCESSFULLY]
-        );
+        return OrderStatus::isSuccessful($this->getTransactionStatus());
     }
 
     /**
@@ -26,12 +24,9 @@ class CompletePurchaseResponse extends AbstractResponse
      *
      * @return boolean
      */
-    public function isPending()
+    public function isPending(): bool
     {
-        return in_array(
-            $this->getDataProperty('status'),
-            [OrderStatuses::STATUS_REGISTERED_BUT_NOT_PAID, OrderStatuses::STATUS_AUTH_ACS_INIATED, OrderStatuses::STATUS_PRE_AUTH_HELD]
-        );
+        return OrderStatus::isPending($this->getTransactionStatus());
     }
 
     /**
@@ -39,12 +34,9 @@ class CompletePurchaseResponse extends AbstractResponse
      *
      * @return boolean
      */
-    public function isCancelled()
+    public function isCancelled(): bool
     {
-        return in_array(
-            $this->getDataProperty('status'),
-            [OrderStatuses::STATUS_AUTH_REVERSED, OrderStatuses::STATUS_REFUNDED, OrderStatuses::STATUS_AUTH_DECLINED]
-        );
+        return OrderStatus::isCancelled($this->getTransactionStatus());
     }
 
     /**
@@ -52,9 +44,9 @@ class CompletePurchaseResponse extends AbstractResponse
      *
      * @return null|string A response message from the payment gateway
      */
-    public function getMessage()
+    public function getMessage(): ?string
     {
-        return $this->getDataProperty('actionCodeDescription');
+        return data_get($this->getData(), 'order.actionCodeDescription');
     }
 
     /**
@@ -62,9 +54,9 @@ class CompletePurchaseResponse extends AbstractResponse
      *
      * @return null|string A response code from the payment gateway
      */
-    public function getCode()
+    public function getCode(): ?string
     {
-        return $this->getDataProperty('actionCode');
+        return data_get($this->getData(), 'order.actionCode');
     }
 
     /**
@@ -73,7 +65,7 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        return $this->getDataProperty('orderId');
+        return data_get($this->getData(), 'order.orderId');
     }
 
     /**
@@ -83,6 +75,18 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getTransactionId()
     {
-        return $this->getDataProperty('orderNumber');
+        return data_get($this->getData(), 'order.orderNumber');
+    }
+
+    public function getSessionDebug(): array
+    {
+        return [
+            'order' => $this->getDataProperty('order'),
+        ];
+    }
+
+    protected function getTransactionStatus()
+    {
+        return $this->getDataProperty('status');
     }
 }

@@ -13,6 +13,7 @@ $gateway->initialize(
     [
         'username' => getenv('BTIPAY_USERNAME'),
         'password' => getenv('BTIPAY_PASSWORD'),
+        'callback_token' => getenv('BTIPAY_CALLBACK_TOKEN'),
 //     'lang' => 'en',
         'testMode' => true,
     ]
