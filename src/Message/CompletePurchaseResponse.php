@@ -46,7 +46,7 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getMessage(): ?string
     {
-        return data_get($this->getData(), 'order.actionCodeDescription');
+        return data_get($this->getData(), 'notification.actionCodeDescription');
     }
 
     /**
@@ -56,7 +56,7 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getCode(): ?string
     {
-        return data_get($this->getData(), 'order.actionCode');
+        return data_get($this->getData(), 'notification.actionCode');
     }
 
     /**
@@ -65,7 +65,7 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getTransactionReference()
     {
-        return data_get($this->getData(), 'order.orderId');
+        return data_get($this->getData(), 'notification.orderId');
     }
 
     /**
@@ -75,18 +75,18 @@ class CompletePurchaseResponse extends AbstractResponse
      */
     public function getTransactionId()
     {
-        return data_get($this->getData(), 'order.orderNumber');
+        return data_get($this->getData(), 'notification.orderNumber');
     }
 
     public function getSessionDebug(): array
     {
         return [
-            'order' => $this->getDataProperty('order'),
+            'notification' => $this->getDataProperty('notification'),
         ];
     }
 
     protected function getTransactionStatus()
     {
-        return $this->getDataProperty('status');
+        return data_get($this->getData(), 'notification.status');
     }
 }

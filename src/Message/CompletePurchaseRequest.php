@@ -15,7 +15,7 @@ class CompletePurchaseRequest extends AbstractRequest
     /**
      * @inheritdoc
      */
-    public function getData()
+    protected function parseNotification(): array
     {
         $data = [];
         $data['orderId'] = $this->httpRequest->query->get('orderId');
@@ -23,20 +23,19 @@ class CompletePurchaseRequest extends AbstractRequest
         $btClient = $this->getClient();
         $response = $btClient->getOrderStatusExtendedByOrderId($data['orderId']);
 
-        $order = [];
-        $order['orderNumber'] = $response->getOrderNumber();
-        $order['status'] =  $data['status'] = $response->getOrderStatus();
-        $order['actionCode'] = $response->getActionCode();
-        $order['actionCodeDescription'] = $response->getActionCodeDescription();
-        $order['amount'] = $response->getAmount();
-        $order['currency'] = $response->getCurrency();
-        $order['orderDescription'] = $response->getOrderDescription();
+        $data['orderNumber'] = $response->getOrderNumber();
+        $data['status'] = $response->getOrderStatus();
+        $data['actionCode'] = $response->getActionCode();
+        $data['actionCodeDescription'] = $response->getActionCodeDescription();
+        $data['amount'] = $response->getAmount();
+        $data['currency'] = $response->getCurrency();
+        $data['orderDescription'] = $response->getOrderDescription();
         $cardAuthInfo = $response->getCardAuthInfo();
-        $order['card_name'] = $cardAuthInfo->getCardholderName();
-        $order['card_number'] = $cardAuthInfo->getPan();
-        $order['card_exp'] = $cardAuthInfo->getExpiration();
+        $data['card_name'] = $cardAuthInfo->getCardholderName();
+        $data['card_number'] = $cardAuthInfo->getPan();
+        $data['card_exp'] = $cardAuthInfo->getExpiration();
 
-        $data['order'] = $order;
+        $data['order'] = $data;
         return $data;
     }
 
