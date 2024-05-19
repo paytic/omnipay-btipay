@@ -7,14 +7,14 @@ use Stev\BTIPay\Util\OrderStatuses;
 class OrderStatus
 {
     public const STATUSES_SUCCESSFUL = [
-        OrderStatuses::STATUS_DEPOSITED_SUCCESSFULLY
+        OrderStatuses::STATUS_DEPOSITED_SUCCESSFULLY,
+            OrderStatuses::STATUS_PRE_AUTH_HELD
     ];
 
     public const STATUSES_PENDING =
         [
-            OrderStatuses::STATUS_REGISTERED_BUT_NOT_PAID,
+//            OrderStatuses::STATUS_REGISTERED_BUT_NOT_PAID,
             OrderStatuses::STATUS_AUTH_ACS_INIATED,
-            OrderStatuses::STATUS_PRE_AUTH_HELD
         ];
 
     public const STATUSES_CANCELLED = [

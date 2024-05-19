@@ -14,12 +14,9 @@ class HttpRequestBuilder
     /**
      * @return HttpRequest
      */
-    public static function createServerCompletePurchase()
+    public static function createServerCompletePurchase(): HttpRequest
     {
-        $request = self::create();
-        $request->request->add(self::getFileContents('serverCompletePurchaseParams'));
-
-        return $request;
+        return self::createFromFile('ServerComplete/demoParams');
     }
 
     /**
