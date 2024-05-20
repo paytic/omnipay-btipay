@@ -5,7 +5,6 @@ namespace Paytic\Omnipay\Btipay\Message;
 use Paytic\Omnipay\Btipay\Utils\OrderStatus;
 use Paytic\Omnipay\Common\Message\Traits\GatewayNotificationResponseTrait;
 use Paytic\Omnipay\Common\Message\Traits\HasTokenTrait;
-use Paytic\Omnipay\Common\Models\Token;
 use DateTime;
 
 /**
@@ -93,28 +92,9 @@ class ServerCompletePurchaseResponse extends AbstractResponse
         return data_get($this->getData(), 'notification.status');
     }
 
-    /**
-     * @return Notify
-     */
-    public function getBtipayNotify()
-    {
-        return $this->getDataProperty('notification');
-    }
-
     public function send()
     {
-        header('Content-type: application/xml');
         echo $this->getContent();
-    }
-
-    public function getToken(): ?Token
-    {
-        return new Token(
-            [
-                'id' => $this->getBtipayNotify()->token_id,
-                'expiration_date' => $this->getBtipayNotify()->token_expiration_date,
-            ]
-        );
     }
 
     /**
@@ -122,15 +102,7 @@ class ServerCompletePurchaseResponse extends AbstractResponse
      */
     public function getContent()
     {
-        $content = "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-
-        if ($this->getCodeType() == 0) {
-            $content .= "<crc>{$this->getBtipayNotify()->getCrc()}</crc>";
-        } else {
-            $content .= "<crc error_type=\"{$this->getCodeType()}\" error_code=\"{$this->getCode()}\">";
-            $content .= $this->getMessage();
-            $content .= "</crc>";
-        }
+        $content = "ok";
 
         return $content;
     }
@@ -143,24 +115,5 @@ class ServerCompletePurchaseResponse extends AbstractResponse
     public function getCodeType()
     {
         return $this->getDataProperty('codeType');
-    }
-
-    /**
-     * @return false|string
-     */
-    public function getTransactionDate()
-    {
-        $timestamp = $this->getBtipayNotify()->timestamp;
-        $dateTime = DateTime::createFromFormat('YmdHis', $timestamp);
-
-        return $dateTime->format('Y-m-d H:i:s');
-    }
-
-    /**
-     * @return string
-     */
-    public function getCardMasked()
-    {
-        return $this->getBtipayNotify()->pan_masked;
     }
 }
