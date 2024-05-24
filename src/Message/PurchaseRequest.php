@@ -122,12 +122,13 @@ class PurchaseRequest extends AbstractRequest
 
         $billingInfo = new BillingInfo();
         $deliveryInfo = new DeliveryInfo();
+        $deliveryInfo->setDeliveryType('email');
 
         $this->customerInfoPopulateCountry($billingInfo, $card->getBillingCountry());
         $this->customerInfoPopulateCountry($deliveryInfo, $card->getShippingCountry(), $card->getBillingCountry());
 
         $this->customerInfoPopulateCity($billingInfo, $card->getBillingCity());
-        $this->customerInfoPopulateCity($deliveryInfo, $card->getShippingCity(), $card->getBillingCity());
+        $this->customerInfoPopulateCity($deliveryInfo, $card->getShippingCity(), $billingInfo->getCity());
 
         $this->customerInfoPopulateAddress($billingInfo, $card, 'billing');
         $this->customerInfoPopulateAddress($deliveryInfo, $card, 'shipping', $billingInfo->getPostAddress());
