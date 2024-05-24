@@ -5,9 +5,11 @@ namespace Paytic\Omnipay\Btipay\Message;
 use DateTime;
 use Paytic\Omnipay\Common\Message\Traits\HasLanguageRequestTrait;
 use Paytic\Omnipay\Common\Message\Traits\RequestDataGetWithValidationTrait;
+use Stev\BTIPay\BTIPayClient;
 use Stev\BTIPay\Exceptions\ValidationException;
 use Stev\BTIPay\Model\BillingInfo;
 use Stev\BTIPay\Model\CustomerDetails;
+use Stev\BTIPay\Model\DeliveryInfo;
 use Stev\BTIPay\Model\Order;
 use Stev\BTIPay\Model\OrderBundle;
 use Stev\BTIPay\Util\ErrorCodes;
@@ -74,8 +76,9 @@ class PurchaseRequest extends AbstractRequest
             return $data;
         }
 
-        var_dump($response);
-        die('++');
+//        var_dump($response);
+        echo 'DUPLICATE PAYMENT ATTEMPT';
+        die('');
     }
 
     protected function generateOrder()
@@ -83,7 +86,7 @@ class PurchaseRequest extends AbstractRequest
         $order = new Order();
         $order->setOrderNumber($this->getOrderId())
             ->setDescription($this->getDescription())
-            ->setAmount($this->getAmount()*100)
+            ->setAmount($this->getAmount() * 100)
             ->setCurrencyAlpha3($this->getCurrency())
             ->setReturnUrl('' . $this->getReturnUrl());
 //        $card->confirmUrl = ''.$this->getNotifyUrl(); //Add spaces to add the item to the XML
@@ -118,24 +121,47 @@ class PurchaseRequest extends AbstractRequest
         $customerDetails->setPhone($phone);
 
         $billingInfo = new BillingInfo();
-        $country = $card->getBillingCountry();
-        $country = !empty($country) ?$country : 'RO';
+        $deliveryInfo = new DeliveryInfo();
+
+        $this->customerInfoPopulateCountry($billingInfo, $card->getBillingCountry());
+        $this->customerInfoPopulateCountry($deliveryInfo, $card->getShippingCountry(), $card->getBillingCountry());
+
+        $this->customerInfoPopulateCity($billingInfo, $card->getBillingCity());
+        $this->customerInfoPopulateCity($deliveryInfo, $card->getShippingCity(), $card->getBillingCity());
+
+        $this->customerInfoPopulateAddress($billingInfo, $card, 'billing');
+        $this->customerInfoPopulateAddress($deliveryInfo, $card, 'shipping', $billingInfo->getPostAddress());
+
+        $customerDetails->setBillingInfo($billingInfo);
+        $customerDetails->setDeliveryInfo($deliveryInfo);
+        return $customerDetails;
+    }
+
+    protected function customerInfoPopulateCountry($infoObject, $country, $default = 'RO')
+    {
+        $country = !empty($country) ? $country : $default;
         if (strlen($country) == 2) {
             $country = strtoupper($country);
         } else {
             $country = strtoupper(substr($country, 0, 2));
         }
-        $billingInfo->setCountryAlpha2($country);
+        $infoObject->setCountryAlpha2($country);
+    }
 
-        $city = $card->getBillingCity();
-        $city = !empty($city) ? $city : '----';
-        $billingInfo->setCity($city);
+    protected function customerInfoPopulateCity($infoObject, $city, $default = '----')
+    {
+        $city = !empty($city) ? $city : $default;
+        $infoObject->setCity($city);
+    }
 
-        $address = trim($card->getBillingAddress1().' '.$card->getBillingAddress2());
-        $address = !empty($address) ? $address : 'Str. .....';
-        $billingInfo->setPostAddress($address);
-
-        $customerDetails->setBillingInfo($billingInfo);
-        return $customerDetails;
+    protected function customerInfoPopulateAddress($infoObject, $cardObject, $type = 'billing', $default = 'Str. -----')
+    {
+        $address = trim(
+            $cardObject->{'get' . ucfirst($type) . 'Address1'}()
+            . ' '
+            . $cardObject->{'get' . ucfirst($type) . 'Address2'}()
+        );
+        $address = !empty($address) ? $address : $default;
+        $infoObject->setPostAddress($address);
     }
 }
