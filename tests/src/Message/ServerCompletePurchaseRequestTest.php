@@ -35,5 +35,7 @@ class ServerCompletePurchaseRequestTest extends AbstractRequestTest
             'operation' => 'deposited'],
             $request->getDecodedData()
         );
+
+        self::assertNull($request->getToken());
     }
 }

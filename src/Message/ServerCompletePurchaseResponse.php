@@ -4,8 +4,6 @@ namespace Paytic\Omnipay\Btipay\Message;
 
 use Paytic\Omnipay\Btipay\Utils\OrderStatus;
 use Paytic\Omnipay\Common\Message\Traits\GatewayNotificationResponseTrait;
-use Paytic\Omnipay\Common\Message\Traits\HasTokenTrait;
-use DateTime;
 
 /**
  * Class PurchaseResponse
@@ -14,7 +12,6 @@ use DateTime;
 class ServerCompletePurchaseResponse extends AbstractResponse
 {
     use GatewayNotificationResponseTrait;
-    use HasTokenTrait;
 
     public function isSuccessful(): bool
     {
