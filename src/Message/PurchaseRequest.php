@@ -57,6 +57,13 @@ class PurchaseRequest extends AbstractRequest
      */
     protected function populateData()
     {
+        $data = [];
+        $data['redirectUrl'] = $this->generateRedirectUrl();
+        return $data;
+    }
+
+    protected function generateRedirectUrl()
+    {
         $btClient = $this->getClient();
         $order = $this->generateOrder();
         try {
@@ -72,8 +79,7 @@ class PurchaseRequest extends AbstractRequest
         $responseErrorCode = $response->getErrorCode();
         if ($responseErrorCode === NULL || $responseErrorCode === ErrorCodes::SUCCESS) {
             //Redirect your user to the received form url
-            $data['redirectUrl'] = $response->getFormUrl();
-            return $data;
+            return $response->getFormUrl();
         }
 
 //        var_dump($response);
