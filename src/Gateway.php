@@ -20,6 +20,13 @@ use Omnipay\Common\Message\RequestInterface;
  * @method RequestInterface createCard(array $options = [])
  * @method RequestInterface updateCard(array $options = [])
  * @method RequestInterface deleteCard(array $options = [])
+ * @method RequestInterface purchaseWithSavedCard(array $options = [])
+ * @method RequestInterface merchantInitiatedPurchase(array $options = [])
+ * @method RequestInterface paymentOrderBinding(array $options = [])
+ * @method RequestInterface getBindings(array $options = [])
+ * @method RequestInterface bindCard(array $options = [])
+ * @method RequestInterface unbindCard(array $options = [])
+ * @method RequestInterface getOrderStatusExtended(array $options = [])
  * @method \Omnipay\Common\Message\NotificationInterface acceptNotification(array $options = array())
  * @method \Omnipay\Common\Message\RequestInterface fetchTransaction(array $options = [])
  */

@@ -3,6 +3,9 @@
 namespace Paytic\Omnipay\Btipay\Tests;
 
 use Paytic\Omnipay\Btipay\Gateway;
+use Paytic\Omnipay\Btipay\Message\PurchaseAndSaveCardRequest;
+use Paytic\Omnipay\Btipay\Message\PurchaseRequest;
+use Paytic\Omnipay\Btipay\Message\PurchaseWithSavedCardRequest;
 use Omnipay\Tests\GatewayTestCase;
 
 /**
@@ -17,6 +20,19 @@ class GatewayTest extends GatewayTestCase
         $this->gateway = new Gateway(
             $this->getHttpClient(),
             $this->getHttpRequest()
+        );
+    }
+
+    public function testPurchaseSelectsTheAppropriateCardOnFileFlow()
+    {
+        self::assertInstanceOf(PurchaseRequest::class, $this->gateway->purchase());
+        self::assertInstanceOf(
+            PurchaseAndSaveCardRequest::class,
+            $this->gateway->purchase(['clientId' => 'customer-1'])
+        );
+        self::assertInstanceOf(
+            PurchaseWithSavedCardRequest::class,
+            $this->gateway->purchase(['clientId' => 'customer-1', 'bindingId' => 'binding-1'])
         );
     }
 }
