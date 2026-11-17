@@ -78,6 +78,16 @@ class CompletePurchaseResponse extends AbstractResponse
         return data_get($this->getData(), 'notification.orderNumber');
     }
 
+    public function getBindingId()
+    {
+        return data_get($this->getData(), 'notification.bindingInfo.bindingId');
+    }
+
+    public function getClientId()
+    {
+        return data_get($this->getData(), 'notification.bindingInfo.clientId');
+    }
+
     public function getSessionDebug(): array
     {
         return [

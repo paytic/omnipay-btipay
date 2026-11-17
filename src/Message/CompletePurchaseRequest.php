@@ -34,8 +34,41 @@ class CompletePurchaseRequest extends AbstractRequest
         $data['card_name'] = $cardAuthInfo->getCardholderName();
         $data['card_number'] = $cardAuthInfo->getPan();
         $data['card_exp'] = $cardAuthInfo->getExpiration();
+        if (method_exists($response, 'getBindingInfo')) {
+            $bindingInfo = $response->getBindingInfo();
+            $data['bindingInfo'] = is_array($bindingInfo)
+                ? $bindingInfo
+                : $this->normalizeBindingInfo($bindingInfo);
+        }
 
         $data['order'] = $data;
+        return $data;
+    }
+
+    protected function normalizeBindingInfo($bindingInfo): array
+    {
+        if (!is_object($bindingInfo)) {
+            return [];
+        }
+
+        $data = [];
+        foreach ([
+            'clientId',
+            'bindingId',
+            'cardArtUrl',
+            'cardArtPicture',
+            'cardArtForegroundColor',
+            'bin',
+            'panLastFour',
+        ] as $field) {
+            $getter = 'get' . ucfirst($field);
+            if (method_exists($bindingInfo, $getter)) {
+                $data[$field] = $bindingInfo->$getter();
+            } elseif (isset($bindingInfo->$field)) {
+                $data[$field] = $bindingInfo->$field;
+            }
+        }
+
         return $data;
     }
 
